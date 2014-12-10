@@ -1,0 +1,33 @@
+{
+  "name": "MongoDBPlayground",
+  "version": "0.0.0",
+  "authors": [
+    "gerasimenkoalexanderua@gmail.com"
+  ],
+  "description": "Examples and practice playground for MongoDB",
+  "main": "public/index.php",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "MongoDB",
+    "Mongo",
+    "DB",
+    "noSQL"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.1",
+    "angular": "~1.3.5",
+    "angular-route": "~1.3.5",
+    "angular-resource": "~1.3.5",
+    "angular-contenteditable": "~0.3.7"
+  }
+}
