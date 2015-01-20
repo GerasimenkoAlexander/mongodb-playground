@@ -1,7 +1,9 @@
 var mongoPlayground = angular.module('mongodb-playground', []);
 
 mongoPlayground.controller('mainCtrl', ['$scope', function($scope){
+    $scope.loadExample = function(){
 
+    }
 }]);
 
 mongoPlayground.controller('examplesCtrl', ['$scope', function($scope){

@@ -15,36 +15,55 @@
     <script type="text/javascript" src="/js/app/app.js"></script>
 </head>
 <body ng-controller="mainCtrl">
-    <div class="container-fluid">
+    <div class="container-fluid full-size">
+
         <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-12">
                 <h1>
                     <span class="glyphicon glyphicon-heart"></span>
                     MongoDB Playground
                 </h1>
+            </div>
+        </div>
+
+        <div class="row control">
+
+            <div class="col-md-5">
                 <div id="a-examples" ng-controller="examplesCtrl">
                     <ul class="nav nav-pills full-width">
                         <?php foreach($data['examples'] as $example): ?>
                             <li>
-                                <a href="#">
+                                <a href="#<?= $example['_id']; ?>" ng-click="loadExample()">
                                     <?= $example['name']; ?>
                                 </a>
                             </li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
-                <div id="a-description" ng-controller="descriptionCtrl">
-                    description
-                </div>
             </div>
+
             <div class="col-md-7">
                 <div id="a-console" ng-controller="consoleCtrl">
                     console
                 </div>
+            </div>
+
+        </div>
+
+        <div class="row info">
+
+            <div class="col-md-5">
+                <div id="a-description" ng-controller="descriptionCtrl">
+                    description
+                </div>
+            </div>
+
+            <div class="col-md-7">
                 <div id="a-output" ng-controller="outputCtrl">
                     output
                 </div>
             </div>
+
         </div>
     </div>
     <?//= $data['userProgress']['_id']; ?>

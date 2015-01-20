@@ -1,3 +1,13 @@
+html,body, .full-size
+{
+    height: 100%;
+}
 .full-width > li{
     width: 100%;
+}
+.control{
+    height: 40%;
+}
+.info{
+    height: 50%;
 }
