@@ -1,24 +1,95 @@
-var mongoPlayground = angular.module('mongodb-playground', []);
+(function(){
+    'use strict';
 
-mongoPlayground.controller('mainCtrl', ['$scope', function($scope){
-    $scope.loadExample = function(){
+    var mongoPlayground = angular.module('mongodb-playground', [
+        'ngRoute',
+        'ngResource',
+        //'contenteditable',
+        'ui.codemirror'
+    ]);
 
+    mongoPlayground.factory('Examples', Examples);
+    mongoPlayground.service('Example', Example);
+
+    mongoPlayground.controller('mainCtrl', MainCtrl);
+    mongoPlayground.controller('examplesCtrl', ExamplesCtrl);
+    mongoPlayground.controller('descriptionCtrl', DescriptionCtrl);
+    mongoPlayground.controller('consoleCtrl', ConsoleCtrl);
+    mongoPlayground.controller('outputCtrl', OutputCtrl);
+
+    Examples.$inject = ['$resource'];
+    function Examples($resource){
+        return $resource('/?url=example&id=:id', {}, {
+            query: {isArray: false}
+        })
     }
-}]);
 
-mongoPlayground.controller('examplesCtrl', ['$scope', function($scope){
+    function Example(){
+        var example = this;
+        example.example = {};
+    }
 
-}]);
+    MainCtrl.$inject = ['$scope'];
+    function MainCtrl ($scope){}
 
-mongoPlayground.controller('descriptionCtrl', ['$scope', function($scope){
+    ExamplesCtrl.$inject = ['$scope', 'Examples', 'Example'];
+    function ExamplesCtrl ($scope, Examples, Example){
+        var vm = this;
 
-}]);
+        vm.loadExample = loadExample;
+        angular.element(document).ready(loadExamples());
 
-mongoPlayground.controller('consoleCtrl', ['$scope', function($scope){
+        function loadExamples() {
+            Examples.query().$promise.then(function success(success){
+                vm.examples = success;
+            }, function error(error) {
+                console.warn(error);
+            });
+        }
 
-}]);
+        function loadExample (id){
+            Examples.get({id:id}).$promise.then(function success(success){
+                Example.example = success;
+            }, function error(error){
+                console.warn(error);
+            });
+        }
+    }
 
-mongoPlayground.controller('outputCtrl', ['$scope', function($scope){
+    DescriptionCtrl.$inject = ['$scope', 'Example'];
+    function DescriptionCtrl ($scope, Example){
+        var vm = this;
+        $scope.$watch(function(){
+            return Example.example;
+        }, function (newValue){
+            vm.description = newValue.description;
+        });
+    }
 
-}]);
+    ConsoleCtrl.$inject = ['$scope', 'Example'];
+    function ConsoleCtrl ($scope, Example){
+        var vm = this;
+        vm.editorOptionsJS = {
+            lineWrapping : true,
+            lineNumbers: true,
+            readOnly: false,
+            mode: 'javascript'
+        };
+        //not working
+        vm.editorOptionsPHP = {
+            lineWrapping : true,
+            lineNumbers: true,
+            readOnly: false,
+            mode: 'php'
+        };
+        $scope.$watch(function(){
+            return Example.example;
+        }, function (newValue){
+            vm.codeJS  = newValue.example;
+            vm.codePHP = newValue.examplePHP;
+        });
+    }
 
+    OutputCtrl.$inject = ['$scope'];
+    function OutputCtrl ($scope){}
+})();

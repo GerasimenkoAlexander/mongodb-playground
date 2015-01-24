@@ -18,6 +18,11 @@ error_reporting(E_ALL);
 $config = require_once(APP_PATH . 'config.php');
 $dbConf = $config['db'];
 
+//display all data
+$render = function($path, $data){
+    require(APP_PATH . $path);
+};
+
 //http://stackoverflow.com/questions/6482224/mongodb-php-driver-how-to-create-database-and-add-user-to-it
 $connection = new \MongoClient(
     //"mongodb://{$dbConf['host']}:{$dbConf['port']}/{$dbConf['name']}",
@@ -95,28 +100,45 @@ $db->userDbs->update(
 //$dbs = $userConnection->listDBs(); //error - yes it works
 //$dbs = $connection->listDBs(); //works
 //print_r($dbs);
+//----------------------------------------------------------------------------------------------------------------------
 
-$userIP = $_SERVER['REMOTE_ADDR'];
-
-//todo
-//here if user make ajax request return some json data
-
-//get progress for user
-$userProgress = $db->progress->findOne(array('_id' => $userIP));
-if(!$userProgress){
-    //user without progress
-    //can make some tutor or Welcome user
-    $db->progress->insert(array('_id' => $userIP, 'progress' => new \StdClass));
-    $userProgress = $db->progress->findOne(array('_id' => $userIP));
+//data
+$_PUT = array();
+if($_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $putdata = file_get_contents('php://input');
+    parse_str(urldecode($putdata), $_PUT);
 }
 
-//todo examples
-$examples = $db->examples->find();
+$_DELETE = false;
+if($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $_DELETE = true;
+}
 
-//display all data
-$render = function($path, $data){
-    require(APP_PATH . $path);
-};
-$render('layout.php', compact('examples', 'userProgress'));
+//Actions
+if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'))
+{
+    //XHR
+    switch($_GET['url']){
+        case 'example':
+            if(isset($_GET['id']) && $_GET['id']){
+                $response = $db->examples->findOne(array('_id' => new \MongoId($_GET['id'])));
+            } else {
+                //_id return by default always
+                $response = $db->examples->find(array(), array('name' => 1));
+                $response = iterator_to_array($response);
+            }
+            break;
+        case 'description':
+            break;
+        default:
+            break;
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+} else {
+    //require(APP_PATH . '/actions/examples.php');
+    //print_r($examples);die;
+    $render('layout.php'/*, compact('examples', 'userProgress')*/);
+}
 
 ob_end_flush();
