@@ -88,6 +88,15 @@
             vm.codeJS  = newValue.example;
             vm.codePHP = newValue.examplePHP;
         });
+
+        $('#language-tabs a').click(function(e){
+            e.preventDefault();
+            $(this).tab('show');
+            vm.codePHP = vm.codePHP;
+            vm.tabClick = 1;
+            console.warn(vm.tabClick);
+            //$('#cm2').click();
+        });
     }
 
     OutputCtrl.$inject = ['$scope'];

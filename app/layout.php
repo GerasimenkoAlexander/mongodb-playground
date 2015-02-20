@@ -36,7 +36,7 @@
 
             <div class="col-md-7">
                 <div id="a-console" ng-controller="consoleCtrl as c">
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-tabs" id="language-tabs">
                         <li role="presentation" class="active">
                             <a href="#js" aria-controls="js" role="tab" data-toggle="tab">JS</a>
                         </li>
@@ -46,12 +46,16 @@
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="js">
-                            <ui-codemirror ng-model="c.codeJS" ui-codemirror-opts="c.editorOptionsJS"></ui-codemirror>
+                            <ui-codemirror ng-model="c.codeJS" ui-codemirror-opts="c.editorOptionsJS" id="cm1"></ui-codemirror>
+                            <input type="text" ng-model="c.codeJS"/>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="php">
-                            <ui-codemirror ng-model="c.codePHP" ui-codemirror-opts="c.editorOptionsPHP"></ui-codemirror>
+                            <ui-codemirror ng-model="c.codePHP" ui-codemirror-opts="c.editorOptionsPHP" ui-refresh="c.tabClick" id="cm2"></ui-codemirror>
+                            <input type="text" ng-model="c.codePHP"/>
                         </div>
                     </div>
+
+                    <ui-codemirror ng-model="c.codePHP" ui-codemirror-opts="c.editorOptionsPHP" ></ui-codemirror>
                 </div>
             </div>
 
