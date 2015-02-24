@@ -6,6 +6,8 @@
     <title>Mongo Playground</title>
     <link href="/components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
     <link href="/components/codemirror/lib/codemirror.css" rel="stylesheet">
+    <link href="/components/codemirror/theme/ambiance.css" rel="stylesheet">
+    <!--<link href="/components/codemirror/theme/pastel-on-dark.css" rel="stylesheet">-->
     <link href="/css/main.css" rel="stylesheet">
 </head>
 <body ng-controller="mainCtrl">
@@ -22,7 +24,7 @@
 
         <div class="row control">
 
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <div id="a-examples" ng-controller="examplesCtrl as e">
                     <ul class="nav nav-pills full-width">
                         <li ng-repeat="example in e.examples">
@@ -34,28 +36,9 @@
                 </div>
             </div>
 
-            <div class="col-md-7">
-                <div id="a-console" ng-controller="consoleCtrl as c">
-                    <ul class="nav nav-tabs" id="language-tabs">
-                        <li role="presentation" class="active">
-                            <a href="#js" aria-controls="js" role="tab" data-toggle="tab">JS</a>
-                        </li>
-                        <li role="presentation">
-                            <a href="#php" aria-controls="php" role="tab" data-toggle="tab">PHP</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane active" id="js">
-                            <ui-codemirror ng-model="c.codeJS" ui-codemirror-opts="c.editorOptionsJS" id="cm1"></ui-codemirror>
-                            <input type="text" ng-model="c.codeJS"/>
-                        </div>
-                        <div role="tabpanel" class="tab-pane" id="php">
-                            <ui-codemirror ng-model="c.codePHP" ui-codemirror-opts="c.editorOptionsPHP" ui-refresh="c.tabClick" id="cm2"></ui-codemirror>
-                            <input type="text" ng-model="c.codePHP"/>
-                        </div>
-                    </div>
-
-                    <ui-codemirror ng-model="c.codePHP" ui-codemirror-opts="c.editorOptionsPHP" ></ui-codemirror>
+            <div class="col-md-8">
+                <div id="a-description" ng-controller="descriptionCtrl as d">
+                    {{d.description}}
                 </div>
             </div>
 
@@ -63,13 +46,18 @@
 
         <div class="row info">
 
-            <div class="col-md-5">
-                <div id="a-description" ng-controller="descriptionCtrl as d">
-                    {{d.description}}
+            <div class="col-md-7">
+                <div id="a-console" ng-controller="consoleCtrl as c">
+                    <div id="js">
+                        <ui-codemirror ng-model="c.codeJS" ui-codemirror-opts="c.editorOptionsJS" id="cm1"></ui-codemirror>
+                    </div>
+                    <div id="php">
+                        <ui-codemirror ng-model="c.codePHP" ui-codemirror-opts="c.editorOptionsPHP" id="cm2"></ui-codemirror>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-md-7">
+            <div class="col-md-5">
                 <div id="a-output" ng-controller="outputCtrl as o">
                     output
                 </div>

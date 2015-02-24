@@ -69,33 +69,27 @@
     ConsoleCtrl.$inject = ['$scope', 'Example'];
     function ConsoleCtrl ($scope, Example){
         var vm = this;
+        vm.activeTab= 'JS';
         vm.editorOptionsJS = {
             lineWrapping : true,
             lineNumbers: true,
             readOnly: false,
-            mode: 'javascript'
+            mode: 'javascript',
+            theme: 'ambiance'
         };
         //not working
         vm.editorOptionsPHP = {
             lineWrapping : true,
             lineNumbers: true,
             readOnly: false,
-            mode: 'php'
+            mode: 'php',
+            theme: 'ambiance'
         };
         $scope.$watch(function(){
             return Example.example;
         }, function (newValue){
             vm.codeJS  = newValue.example;
             vm.codePHP = newValue.examplePHP;
-        });
-
-        $('#language-tabs a').click(function(e){
-            e.preventDefault();
-            $(this).tab('show');
-            vm.codePHP = vm.codePHP;
-            vm.tabClick = 1;
-            console.warn(vm.tabClick);
-            //$('#cm2').click();
         });
     }
 
