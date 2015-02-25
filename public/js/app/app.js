@@ -94,5 +94,16 @@
     }
 
     OutputCtrl.$inject = ['$scope'];
-    function OutputCtrl ($scope){}
+    function OutputCtrl ($scope){
+        var vm = this;
+        vm.activeTab= 'JS';
+        vm.outputOptions = {
+            lineWrapping : true,
+            lineNumbers: true,
+            readOnly: true,
+            mode: 'javascript',
+            theme: 'ambiance'
+        };
+        vm.output = "{output: true}";
+    }
 })();

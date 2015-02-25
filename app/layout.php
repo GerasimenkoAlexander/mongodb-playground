@@ -28,7 +28,7 @@
                 <div id="a-examples" ng-controller="examplesCtrl as e">
                     <ul class="nav nav-pills full-width">
                         <li ng-repeat="example in e.examples">
-                            <a  ng-click="e.loadExample(example._id.$id)">
+                            <a href="" ng-click="e.loadExample(example._id.$id)">
                                 {{example.name}}
                             </a>
                         </li>
@@ -59,7 +59,7 @@
 
             <div class="col-md-5">
                 <div id="a-output" ng-controller="outputCtrl as o">
-                    output
+                    <ui-codemirror ng-model="o.output" ui-codemirror-opts="o.outputOptions" id="cm3"></ui-codemirror>
                 </div>
             </div>
 
