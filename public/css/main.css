@@ -14,14 +14,23 @@ body{
     width: 100%;
 }
 .control{
-    height: 25%;
+    height: 225px;
 }
 .info{
     height: 65%;
 }
 
+.iframe .header,
+.iframe .control {
+    display: none;
+}
+
+.iframe {
+    zoom: 0.75;
+}
+
 #js{
-    margin-bottom: 15px;
+    margin-bottom: 25px;
 }
 
 .CodeMirror.cm-s-ambiance{
@@ -36,7 +45,8 @@ body{
 }
 
 #cm3 .CodeMirror {
-    height: auto;
+    /*height: auto;*/
+    height: 625px;
 }
 
 .CodeMirror::after {
@@ -53,4 +63,53 @@ body{
 }
 #cm2 .CodeMirror::after{
     content: "php";
+}
+
+.control>div{
+    overflow: auto;
+    max-height: 100%;
+}
+
+.control{
+    margin-bottom: 20px;
+}
+
+.run{
+    position: absolute;
+    right: 7px;
+    top: 7px;
+    z-index: 999;
+    background-color: #252222;
+    color: #303030;
+}
+
+.run.btn:hover{
+    color: #f5f5f5;
+}
+
+.inputData>div{
+    position: relative;
+}
+
+.nav li.active a{
+    text-decoration: none;
+    background-color: #eee;
+    color: #23527c;
+}
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    text-decoration: none;
+    background-color: #eee;
+    color: #23527c;
+}
+
+.nav > li > a {
+    position: relative;
+    display: block;
+    padding: 9px 15px;
+    margin-bottom: 2px;
+}
+
+#ip{
+    padding: 18px;
 }

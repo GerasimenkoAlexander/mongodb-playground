@@ -27,27 +27,48 @@
     function Example(){
         var example = this;
         example.example = {};
+        example.output  = {}
     }
 
     MainCtrl.$inject = ['$scope'];
     function MainCtrl ($scope){}
 
-    ExamplesCtrl.$inject = ['$scope', 'Examples', 'Example'];
-    function ExamplesCtrl ($scope, Examples, Example){
+    ExamplesCtrl.$inject = ['$scope', '$location', '$http', 'Examples', 'Example'];
+    function ExamplesCtrl ($scope, $location, $http, Examples, Example){
         var vm = this;
 
         vm.loadExample = loadExample;
-        angular.element(document).ready(loadExamples());
+        vm.hash = null;
+        angular.element(document).ready(function(){ loadExamples(); loadProgress(); });
 
         function loadExamples() {
             Examples.query().$promise.then(function success(success){
                 vm.examples = success;
+
+                //if isset hash load this example
+                var hash = $location.path();
+                if(hash){
+                    hash = hash.substr(1);
+                    loadExample(hash);
+                }
             }, function error(error) {
                 console.warn(error);
             });
         }
 
+        function loadProgress() {
+            $http.get(
+                '?url=get-progress'
+            ).success(function(data){
+                //todo from here
+                Example.userProgress = data;
+            }).error(function(error){
+                console.warn(error);
+            });
+        }
+
         function loadExample (id){
+            vm.hash = id;
             Examples.get({id:id}).$promise.then(function success(success){
                 Example.example = success;
             }, function error(error){
@@ -66,10 +87,10 @@
         });
     }
 
-    ConsoleCtrl.$inject = ['$scope', 'Example'];
-    function ConsoleCtrl ($scope, Example){
+    ConsoleCtrl.$inject = ['$scope', '$http', 'Example'];
+    function ConsoleCtrl ($scope, $http, Example){
         var vm = this;
-        vm.activeTab= 'JS';
+        vm.run = run;
         vm.editorOptionsJS = {
             lineWrapping : true,
             lineNumbers: true,
@@ -91,10 +112,26 @@
             vm.codeJS  = newValue.example;
             vm.codePHP = newValue.examplePHP;
         });
+
+        function run(lang){
+            lang        = (lang === 'js') ? lang : 'php';
+            var code    = (lang === 'js') ? vm.codeJS : vm.codePHP;
+            $http.post(
+                '?url=run-code',
+                {
+                    lang: lang,
+                    code: code
+                }
+            ).success(function(data){
+                Example.output = data;
+            }).error(function(error){
+                console.warn(error);
+            });
+        }
     }
 
-    OutputCtrl.$inject = ['$scope'];
-    function OutputCtrl ($scope){
+    OutputCtrl.$inject = ['$scope', 'Example'];
+    function OutputCtrl ($scope, Example){
         var vm = this;
         vm.activeTab= 'JS';
         vm.outputOptions = {
@@ -104,6 +141,11 @@
             mode: 'javascript',
             theme: 'ambiance'
         };
-        vm.output = "{output: true}";
+
+        $scope.$watch(function(){
+            return Example.output;
+        }, function (newValue){
+            vm.output  = JSON.stringify(newValue, null, '\t');
+        });
     }
 })();

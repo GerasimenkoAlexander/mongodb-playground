@@ -16,6 +16,6 @@ $userProgress = $db->progress->findOne(array('_id' => $userIP));
 if(!$userProgress){
     //user without progress
     //can make some tutor or Welcome user
-    $db->progress->insert(array('_id' => $userIP, 'progress' => new \StdClass));
+    $db->progress->insert(array('_id' => $userIP, 'name' => $userIP, 'progress' => new \StdClass));
     $userProgress = $db->progress->findOne(array('_id' => $userIP));
 }

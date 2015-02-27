@@ -89,6 +89,7 @@ $userConnection = new \MongoClient(
         'password' => $userDbConf['pass'],
     )
 );
+$userDb = $userConnection->selectDB($userDbConf['name']);
 
 //add activity time to db
 $db->userDbs->update(
@@ -109,6 +110,12 @@ if($_SERVER['REQUEST_METHOD'] == 'PUT') {
     parse_str(urldecode($putdata), $_PUT);
 }
 
+//for angular http - http://stackoverflow.com/questions/15485354/angular-http-post-to-php-and-undefined
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $postData = file_get_contents('php://input');
+    $_POST = json_decode($postData);
+}
+
 $_DELETE = false;
 if($_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $_DELETE = true;
@@ -117,6 +124,7 @@ if($_SERVER['REQUEST_METHOD'] == 'DELETE') {
 //Actions
 if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'))
 {
+    $response = '';
     //XHR
     switch($_GET['url']){
         case 'example':
@@ -130,15 +138,48 @@ if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolow
             break;
         case 'description':
             break;
+        case 'get-progress':
+            require_once (APP_PATH . '/actions/progress.php');
+            /**
+             * @var $userProgress object from require_once
+             */
+            $response = $userProgress;
+            break;
+        case 'run-code':
+            $data = $_POST;
+            if(!$data){
+                $response = array('error' => 'empty POST');
+                break;
+            }
+            $lang = $data->lang;
+            $code = $data->code;
+            //todo explode by new line
+            if($lang === 'js'){
+                $code = rtrim($code, ';');
+                $response = $userDb->execute(new \MongoCode('return ' . $code . (($code[strlen($code)-1] === ')') ? '.toArray()' : '')));
+                if($response['ok'] == 1){
+                    $response = $response['retval'];
+                } else {
+                    //handle error
+                }
+            } else {
+                //php
+                $code = str_replace('$db', '$userDb', rtrim($code, ';'));
+                $response = eval('return ' . $code . ';');
+                $response = iterator_to_array($response);
+            }
+            break;
         default:
             break;
     }
     header('Content-Type: application/json');
     echo json_encode($response);
+
+    //todo check iframe SERVER_NAME == HTTP_REFERER
 } else {
     //require(APP_PATH . '/actions/examples.php');
     //print_r($examples);die;
-    $render('layout.php'/*, compact('examples', 'userProgress')*/);
+    $render('layout.php'/*, compact('user', 'userProgress')*/);
 }
 
 ob_end_flush();
