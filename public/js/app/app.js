@@ -27,14 +27,24 @@
     function Example(){
         var example = this;
         example.example = {};
-        example.output  = {}
+        example.output  = {};
+        example.userProgress  = {};
     }
 
-    MainCtrl.$inject = ['$scope'];
-    function MainCtrl ($scope){}
+    MainCtrl.$inject = ['$scope', 'Example'];
+    function MainCtrl ($scope, Example){
+        var vm = this;
 
-    ExamplesCtrl.$inject = ['$scope', '$location', '$http', 'Examples', 'Example'];
-    function ExamplesCtrl ($scope, $location, $http, Examples, Example){
+        $scope.$watch(function(){
+            return Example.userProgress;
+        }, function (newValue){
+            vm.username  = newValue.name;
+        });
+    }
+
+    //todo remove $rootScope
+    ExamplesCtrl.$inject = ['$scope', '$location', '$http', '$rootScope', 'Examples', 'Example'];
+    function ExamplesCtrl ($scope, $location, $http, $rootScope, Examples, Example){
         var vm = this;
 
         vm.loadExample = loadExample;
@@ -69,12 +79,26 @@
 
         function loadExample (id){
             vm.hash = id;
+            Example.hash = vm.hash;
             Examples.get({id:id}).$promise.then(function success(success){
                 Example.example = success;
             }, function error(error){
                 console.warn(error);
             });
         }
+
+        $rootScope.$on('correctAnswer', function(e, data){
+            if(data){
+                //todo notification that exercise is done
+                Example.userProgress.progress.push(Example.hash);
+            }
+        });
+
+        $scope.$watch(function(){
+            return Example.userProgress;
+        }, function (newValue){
+            vm.progress  = newValue.progress;
+        });
     }
 
     DescriptionCtrl.$inject = ['$scope', 'Example'];
@@ -84,11 +108,13 @@
             return Example.example;
         }, function (newValue){
             vm.description = newValue.description;
+            vm.exercise = newValue.exercise;
         });
     }
 
-    ConsoleCtrl.$inject = ['$scope', '$http', 'Example'];
-    function ConsoleCtrl ($scope, $http, Example){
+    //todo remove rootScope
+    ConsoleCtrl.$inject = ['$scope', '$http', '$rootScope', 'Example'];
+    function ConsoleCtrl ($scope, $http, $rootScope, Example){
         var vm = this;
         vm.run = run;
         vm.editorOptionsJS = {
@@ -119,11 +145,13 @@
             $http.post(
                 '?url=run-code',
                 {
+                    id: Example.hash,
                     lang: lang,
                     code: code
                 }
             ).success(function(data){
-                Example.output = data;
+                Example.output = data.data;
+                $rootScope.$broadcast('correctAnswer', data.correct);
             }).error(function(error){
                 console.warn(error);
             });

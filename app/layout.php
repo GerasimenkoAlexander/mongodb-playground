@@ -10,7 +10,7 @@
     <!--<link href="/components/codemirror/theme/pastel-on-dark.css" rel="stylesheet">-->
     <link href="/css/main.css" rel="stylesheet">
 </head>
-<body ng-controller="mainCtrl">
+<body ng-controller="mainCtrl as mc">
     <div class="container-fluid full-size">
 
         <div class="row header">
@@ -22,7 +22,7 @@
             </div>
             <div class="col-sm-3">
                 <div class="pull-right" id="ip">
-                    Hi, IP
+                    Hi, {{mc.username}}<!--todo make editable-->
                 </div>
             </div>
         </div>
@@ -34,6 +34,9 @@
                     <ul class="nav nav-pills full-width">
                         <li ng-repeat="example in e.examples" ng-class="{active: e.hash == example._id.$id}">
                             <a ng-href="#{{example._id.$id}}" ng-click="e.loadExample(example._id.$id)" >
+                                <div class="correct">
+                                    <span ng-show="e.progress.indexOf(example._id.$id) !== -1" class="glyphicon glyphicon-ok-sign"></span>
+                                </div>
                                 {{example.name}}
                             </a>
                         </li>
@@ -43,7 +46,14 @@
 
             <div class="col-sm-8">
                 <div id="a-description" ng-controller="descriptionCtrl as d">
-                    {{d.description}}
+                    <div>
+                        <h2>Description</h2>
+                        {{d.description}}
+                    </div>
+                    <div ng-if="d.exercise">
+                        <h2>Exercise</h2>
+                        {{d.exercise}}
+                    </div>
                 </div>
             </div>
 

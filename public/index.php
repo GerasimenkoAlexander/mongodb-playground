@@ -151,8 +151,9 @@ if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolow
                 $response = array('error' => 'empty POST');
                 break;
             }
-            $lang = $data->lang;
-            $code = $data->code;
+            $id     = $data->id;
+            $lang   = $data->lang;
+            $code   = $data->code;
             //todo explode by new line
             if($lang === 'js'){
                 $code = rtrim($code, ';');
@@ -168,6 +169,23 @@ if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolow
                 $response = eval('return ' . $code . ';');
                 $response = iterator_to_array($response);
             }
+
+            //check response
+            $response = array('data' => $response, 'correct' => false);
+            $example = $db->examples->findOne(array('_id' => new \MongoId($id)));
+
+            if($example && isset($example['answer'])){
+
+                $answer = $userDb->execute(new \MongoCode('return ' . $example['answer']
+                    . (($example['answer'][strlen($example['answer'])-1] === ')') ? '.toArray()' : '')));
+
+                //todo check on empty result - if user delete all data
+                if($answer && isset($answer['retval']) && $answer['retval'] == $response['data']){
+                    $response['correct'] = true;
+                    $db->progress->update(array('_id' => $_SERVER['REMOTE_ADDR']), array('$addToSet' => array('progress' => $id)));
+                }
+            }
+
             break;
         default:
             break;

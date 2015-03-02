@@ -113,3 +113,9 @@ body{
 #ip{
     padding: 18px;
 }
+
+.correct{
+    color: rgb(74, 184, 74);
+    display: inline-block;
+    width: 24px;
+}
