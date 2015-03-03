@@ -4,6 +4,7 @@
     var mongoPlayground = angular.module('mongodb-playground', [
         'ngRoute',
         'ngResource',
+        'ngSanitize',
         //'contenteditable',
         'ui.codemirror'
     ]);
@@ -31,14 +32,37 @@
         example.userProgress  = {};
     }
 
-    MainCtrl.$inject = ['$scope', 'Example'];
-    function MainCtrl ($scope, Example){
+    MainCtrl.$inject = ['$scope', '$timeout', '$http', 'Example'];
+    function MainCtrl ($scope, $timeout, $http, Example){
         var vm = this;
+        vm.changeName = changeName;
+
+        var promise = null;
+        function changeName(){
+            //todo prevent change after page load
+            if(promise){
+                $timeout.cancel(promise);
+            }
+            promise = $timeout(changeNameRequest, 1000);
+        }
+
+        function changeNameRequest(){
+            $http.post(
+                '?url=change-name',
+                { name: vm.username }
+            ).success(function(data){
+                //or data
+                Example.userProgress.name = vm.username;
+            }).error(function(error){
+                console.warn(error);
+            });
+            promise = null;
+        }
 
         $scope.$watch(function(){
             return Example.userProgress;
         }, function (newValue){
-            vm.username  = newValue.name;
+            vm.username = newValue.name;
         });
     }
 
@@ -70,7 +94,6 @@
             $http.get(
                 '?url=get-progress'
             ).success(function(data){
-                //todo from here
                 Example.userProgress = data;
             }).error(function(error){
                 console.warn(error);
@@ -90,6 +113,7 @@
         $rootScope.$on('correctAnswer', function(e, data){
             if(data){
                 //todo notification that exercise is done
+                toastr.success('Exercise done!');
                 Example.userProgress.progress.push(Example.hash);
             }
         });
@@ -176,4 +200,36 @@
             vm.output  = JSON.stringify(newValue, null, '\t');
         });
     }
+
+    mongoPlayground.directive('contenteditable', ['$sce', function($sce) {
+        return {
+            restrict: 'A', // only activate on element attribute
+            require: '?ngModel', // get a hold of NgModelController
+            link: function(scope, element, attrs, ngModel) {
+                if (!ngModel) return; // do nothing if no ng-model
+
+                // Specify how UI should be updated
+                ngModel.$render = function() {
+                    element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
+                };
+
+                // Listen for change events to enable binding
+                element.on('blur keyup change', function() {
+                    scope.$evalAsync(read);
+                });
+                read(); // initialize
+
+                // Write data to the model
+                function read() {
+                    var html = element.html();
+                    // When we clear the content editable the browser leaves a <br> behind
+                    // If strip-br attribute is provided then we strip this out
+                    if ( attrs.stripBr && html == '<br>' ) {
+                        html = '';
+                    }
+                    ngModel.$setViewValue(html);
+                }
+            }
+        };
+    }]);
 })();

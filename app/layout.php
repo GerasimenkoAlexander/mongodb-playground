@@ -7,6 +7,7 @@
     <link href="/components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
     <link href="/components/codemirror/lib/codemirror.css" rel="stylesheet">
     <link href="/components/codemirror/theme/ambiance.css" rel="stylesheet">
+    <link href="/components/toastr/toastr.css" rel="stylesheet">
     <!--<link href="/components/codemirror/theme/pastel-on-dark.css" rel="stylesheet">-->
     <link href="/css/main.css" rel="stylesheet">
 </head>
@@ -22,7 +23,8 @@
             </div>
             <div class="col-sm-3">
                 <div class="pull-right" id="ip">
-                    Hi, {{mc.username}}<!--todo make editable-->
+                    <!--todo restore db data button-->
+                    Hi, <span contenteditable ng-model="mc.username" strip-br="true" ng-change="mc.changeName()"><span>
                 </div>
             </div>
         </div>
@@ -53,6 +55,11 @@
                     <div ng-if="d.exercise">
                         <h2>Exercise</h2>
                         {{d.exercise}}
+                        <div class="clearfix"></div>
+                        <div class="pull-right">
+                            <!--todo show answer with close and paste button-->
+                            <button class="btn grey">Show answer</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -88,12 +95,14 @@
     <script type="text/javascript" src="/components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="/components/angular/angular.js"></script>
     <script type="text/javascript" src="/components/angular-route/angular-route.js"></script>
+    <script type="text/javascript" src="/components/angular-sanitize/angular-sanitize.js"></script>
     <script type="text/javascript" src="/components/angular-resource/angular-resource.js"></script>
     <script type="text/javascript" src="/components/angular-contenteditable/angular-contenteditable.js"></script>
     <script type="text/javascript" src="/components/codemirror/lib/codemirror.js"></script>
     <script type="text/javascript" src="/components/codemirror/mode/javascript/javascript.js" charset="utf-8"></script>
     <script type="text/javascript" src="/components/codemirror/mode/php/php.js" charset="utf-8"></script>
     <script type="text/javascript" src="/components/angular-ui-codemirror/ui-codemirror.js"></script>
+    <script type="text/javascript" src="/components/toastr/toastr.js"></script>
     <script type="text/javascript" src="/js/common.js"></script>
     <script type="text/javascript" src="/js/app/app.js"></script>
 </body>

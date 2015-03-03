@@ -138,6 +138,13 @@ if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolow
             break;
         case 'description':
             break;
+        case 'change-name':
+            $data = $_POST;
+            //todo filter data
+            $name = $data->name;
+            $db->progress->update(array('_id' => $_SERVER['REMOTE_ADDR']), array('$set' => array('name' => $name)));
+            $response = $name;
+            break;
         case 'get-progress':
             require_once (APP_PATH . '/actions/progress.php');
             /**

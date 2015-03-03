@@ -119,3 +119,11 @@ body{
     display: inline-block;
     width: 24px;
 }
+
+.btn.grey{
+    background-color: #303030;
+}
+.btn.grey:hover,
+.btn.grey:focus{
+    color: #f5f5f5;
+}
