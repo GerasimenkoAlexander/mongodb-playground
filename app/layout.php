@@ -23,7 +23,7 @@
             </div>
             <div class="col-sm-3">
                 <div class="pull-right" id="ip">
-                    <!--todo restore db data button-->
+                    <button class="btn btn-xs btn-danger" ng-click="mc.restoreDb()">Restore DB</button> |
                     Hi, <span contenteditable ng-model="mc.username" strip-br="true" ng-change="mc.changeName()"><span>
                 </div>
             </div>
@@ -57,8 +57,7 @@
                         {{d.exercise}}
                         <div class="clearfix"></div>
                         <div class="pull-right">
-                            <!--todo show answer with close and paste button-->
-                            <button class="btn grey">Show answer</button>
+                            <button class="btn grey" answer paste="d.paste()" answer-text="d.answer">Show answer</button>
                         </div>
                     </div>
                 </div>

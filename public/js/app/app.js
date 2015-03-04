@@ -34,8 +34,9 @@
 
     MainCtrl.$inject = ['$scope', '$timeout', '$http', 'Example'];
     function MainCtrl ($scope, $timeout, $http, Example){
-        var vm = this;
-        vm.changeName = changeName;
+        var vm          = this;
+        vm.changeName   = changeName;
+        vm.restoreDb    = restoreDb;
 
         var promise = null;
         function changeName(){
@@ -57,6 +58,21 @@
                 console.warn(error);
             });
             promise = null;
+        }
+
+        function restoreDb(){
+            $http.get(
+                '?url=restore-db'
+            ).success(function(data){
+                if(data.success){
+                    toastr.success('Default DB data was restored');
+                } else {
+                    toastr.error('Something went wrong');
+                }
+            }).error(function(error){
+                console.warn(error);
+                toastr.error('Something went wrong');
+            });
         }
 
         $scope.$watch(function(){
@@ -128,11 +144,24 @@
     DescriptionCtrl.$inject = ['$scope', 'Example'];
     function DescriptionCtrl ($scope, Example){
         var vm = this;
+        vm.paste = paste;
+
+        function paste(){
+            Example.example.example = Example.example.answer;
+            $scope.$apply(); // this is awesome - it applies all changes to Models that $watch to $scope
+            //todo some animation
+            $('.answer').remove(); //also bad code
+        }
+
+        //very bad code
+        $('body').on('click', '#paste', paste);
+
         $scope.$watch(function(){
             return Example.example;
         }, function (newValue){
             vm.description = newValue.description;
             vm.exercise = newValue.exercise;
+            vm.answer = newValue.answer;
         });
     }
 
@@ -156,12 +185,13 @@
             mode: 'php',
             theme: 'ambiance'
         };
+
         $scope.$watch(function(){
             return Example.example;
         }, function (newValue){
             vm.codeJS  = newValue.example;
             vm.codePHP = newValue.examplePHP;
-        });
+        }, true);
 
         function run(lang){
             lang        = (lang === 'js') ? lang : 'php';
@@ -200,6 +230,28 @@
             vm.output  = JSON.stringify(newValue, null, '\t');
         });
     }
+
+    //this is very bad directive
+    mongoPlayground.directive('answer', function () {
+        return {
+            scope: {
+                answerText: '='
+            },
+            link: function(scope, elem, attrs) {
+                elem.on('click', function () {
+                    if($('.answer').length){ //also bad code
+                        return false;
+                    }
+                    elem.after('<div class="answer">' +
+                        scope.answerText +
+                        '<div class="pull-right">' +
+                            '<div><button class="btn btn-default" id="paste">Paste</button></div>' +
+                        '</div>' +
+                    '</div>');
+                });
+            }
+        }
+    });
 
     mongoPlayground.directive('contenteditable', ['$sce', function($sce) {
         return {

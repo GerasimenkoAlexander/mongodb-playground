@@ -145,6 +145,15 @@ if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolow
             $db->progress->update(array('_id' => $_SERVER['REMOTE_ADDR']), array('$set' => array('name' => $name)));
             $response = $name;
             break;
+        case 'restore-db':
+            $userDb->drop();
+            $structure = $db->structure->find();
+            foreach($structure as $collection){
+                $uCollection = $userDb->selectCollection($collection['name']);
+                $uCollection->batchInsert($collection['data']);
+            }
+            $response = array('success' => true);
+            break;
         case 'get-progress':
             require_once (APP_PATH . '/actions/progress.php');
             /**
