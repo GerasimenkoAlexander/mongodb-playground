@@ -37,7 +37,7 @@
                         <li ng-repeat="example in e.examples" ng-class="{active: e.hash == example._id.$id}">
                             <a ng-href="#{{example._id.$id}}" ng-click="e.loadExample(example._id.$id)" >
                                 <div class="correct">
-                                    <span ng-show="e.progress.indexOf(example._id.$id) !== -1" class="glyphicon glyphicon-ok-sign"></span>
+                                    <span ng-show="e.progress && e.progress.indexOf(example._id.$id) !== -1" class="glyphicon glyphicon-ok-sign"></span>
                                 </div>
                                 {{example.name}}
                             </a>
@@ -50,11 +50,11 @@
                 <div id="a-description" ng-controller="descriptionCtrl as d">
                     <div>
                         <h2>Description</h2>
-                        {{d.description}}
+                        <div ng-bind-html="d.description"></div>
                     </div>
                     <div ng-if="d.exercise">
                         <h2>Exercise</h2>
-                        {{d.exercise}}
+                        <div ng-bind-html="d.exercise"></div>
                         <div class="clearfix"></div>
                         <div class="pull-right">
                             <button class="btn grey" answer paste="d.paste()" answer-text="d.answer">Show answer</button>

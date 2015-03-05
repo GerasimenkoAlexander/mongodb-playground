@@ -141,3 +141,7 @@ body{
 .btn.btn-default{
     color: #333;
 }
+
+b, strong{
+    color: rgb(166, 157, 128);
+}

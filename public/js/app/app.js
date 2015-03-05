@@ -27,9 +27,9 @@
 
     function Example(){
         var example = this;
-        example.example = {};
-        example.output  = {};
-        example.userProgress  = {};
+        example.example         = {};
+        example.output          = {};
+        example.userProgress    = [];
     }
 
     MainCtrl.$inject = ['$scope', '$timeout', '$http', 'Example'];
@@ -141,10 +141,11 @@
         });
     }
 
-    DescriptionCtrl.$inject = ['$scope', 'Example'];
-    function DescriptionCtrl ($scope, Example){
+    DescriptionCtrl.$inject = ['$scope', '$sce', 'Example'];
+    function DescriptionCtrl ($scope, $sce, Example){
         var vm = this;
         vm.paste = paste;
+        //vm.renderHtml = renderHtml;
 
         function paste(){
             Example.example.example = Example.example.answer;
@@ -155,6 +156,11 @@
 
         //very bad code
         $('body').on('click', '#paste', paste);
+
+        /*function renderHtml(htmlCode) {
+            //return $sce.trustAsHtml(htmlCode);
+            return $sce.trustAsHtml('<b>A</b>A');
+        }*/
 
         $scope.$watch(function(){
             return Example.example;
