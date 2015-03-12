@@ -19,7 +19,7 @@ $config = require_once(APP_PATH . 'config.php');
 $dbConf = $config['db'];
 
 //display all data
-$render = function($path, $data){
+$render = function($path, $data = null){
     require(APP_PATH . $path);
 };
 

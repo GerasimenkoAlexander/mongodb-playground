@@ -12,7 +12,7 @@ return array(
         'port' => 27017,
         'user' => 'admin',
         'pass' => 'admin',
-        //use fro default admin but then change on mp
+        //use for default admin but then change on mp
         'name' => 'mp',
     ),
 

@@ -1,6 +1,8 @@
 (function(){
     'use strict';
 
+    //todo ajax loading animation and show dbs button and run php code check for correct
+
     var mongoPlayground = angular.module('mongodb-playground', [
         'ngRoute',
         'ngResource',
@@ -128,7 +130,6 @@
 
         $rootScope.$on('correctAnswer', function(e, data){
             if(data){
-                //todo notification that exercise is done
                 toastr.success('Exercise done!');
                 Example.userProgress.progress.push(Example.hash);
             }
