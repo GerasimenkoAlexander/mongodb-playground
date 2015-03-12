@@ -146,10 +146,11 @@ if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolow
             $response = $name;
             break;
         case 'restore-db':
-            $userDb->drop();
+            //$userDb->drop();
             $structure = $db->structure->find();
             foreach($structure as $collection){
                 $uCollection = $userDb->selectCollection($collection['name']);
+                $uCollection->remove(array()); //todo restore as delete all dbs and regenerate new (user can create self collections)
                 $uCollection->batchInsert($collection['data']);
             }
             $response = array('success' => true);
