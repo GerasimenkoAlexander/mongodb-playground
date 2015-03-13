@@ -145,3 +145,7 @@ body{
 b, strong{
     color: rgb(166, 157, 128);
 }
+
+#preloader{
+    display: none;
+}

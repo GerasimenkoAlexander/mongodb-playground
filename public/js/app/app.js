@@ -2,13 +2,38 @@
     'use strict';
 
     //todo ajax loading animation and show dbs button and run php code check for correct
+    //todo save examples and reload button, restore db good way, check for mongo cursor - toArray
+    //todo db and behavior for the one db and many users to deploy on heroku
+
+    angular
+        .module('SharedServices', [])
+        .config(function ($httpProvider) {
+            $httpProvider.interceptors.push('myHttpInterceptor');
+            var spinnerFunction = function (data, headersGetter) {
+                $('#preloader').show();
+                return data;
+            };
+            $httpProvider.defaults.transformRequest.push(spinnerFunction);
+        })
+        .factory('myHttpInterceptor', function ($q, $window) {
+            return function (promise) {
+                return promise.then(function (response) {
+                    $("#preloader").hide();
+                    return response;
+                }, function (response) {
+                    $("#preloader").hide();
+                    return $q.reject(response);
+                });
+            };
+        });
 
     var mongoPlayground = angular.module('mongodb-playground', [
         'ngRoute',
         'ngResource',
         'ngSanitize',
         //'contenteditable',
-        'ui.codemirror'
+        'ui.codemirror',
+        'SharedServices'
     ]);
 
     mongoPlayground.factory('Examples', Examples);

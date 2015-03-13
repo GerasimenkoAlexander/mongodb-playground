@@ -173,18 +173,31 @@ if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolow
             $code   = $data->code;
             //todo explode by new line
             if($lang === 'js'){
-                $code = rtrim($code, ';');
-                $response = $userDb->execute(new \MongoCode('return ' . $code . (($code[strlen($code)-1] === ')') ? '.toArray()' : '')));
-                if($response['ok'] == 1){
-                    $response = $response['retval'];
-                } else {
-                    //handle error
-                }
+                $response = runJS($userDb, $code);
             } else {
                 //php
                 $code = str_replace('$db', '$userDb', rtrim($code, ';'));
-                $response = eval('return ' . $code . ';');
-                $response = iterator_to_array($response);
+                $code = 'return ' . $code . ';';
+                try{
+
+                    //check syntax errors
+                    $fileName = realpath('./../app/data/tmp') . '/' . uniqid();
+                    file_put_contents($fileName, "<?php \n".$code);
+                    $err = shell_exec('php -l "' . $fileName . '"');
+                    unlink($fileName);
+                    if(strpos($err, 'No syntax errors detected') === FALSE) {
+                        throw new \Exception();
+                    }
+
+                    $response = eval($code);
+
+                } catch(\Exception $e){
+                    $response = 'Error: Check your code';
+                }
+                if($response instanceof \MongoCursor){
+                    $response = iterator_to_array($response);
+                    $response = array_values($response); //say about this thing for PHP driver
+                }
             }
 
             //check response
@@ -193,11 +206,10 @@ if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolow
 
             if($example && isset($example['answer'])){
 
-                $answer = $userDb->execute(new \MongoCode('return ' . $example['answer']
-                    . (($example['answer'][strlen($example['answer'])-1] === ')') ? '.toArray()' : '')));
+                $answer = runJS($userDb, $example['answer']);
 
                 //todo check on empty result - if user delete all data
-                if($answer && isset($answer['retval']) && $answer['retval'] == $response['data']){
+                if($answer == $response['data']){
                     $response['correct'] = true;
                     $db->progress->update(array('_id' => $_SERVER['REMOTE_ADDR']), array('$addToSet' => array('progress' => $id)));
                 }
@@ -215,6 +227,23 @@ if (isset($_GET['url']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolow
     //require(APP_PATH . '/actions/examples.php');
     //print_r($examples);die;
     $render('layout.php'/*, compact('user', 'userProgress')*/);
+}
+
+function runJS($userDb, $code){
+    $code = rtrim($code, ';');
+    $response = $userDb->execute(new \MongoCode('return ' . $code));
+    if($response['ok'] == 1){
+        $response = $response['retval'];
+        //if cursor
+        if(isset($response['_mongo'])){
+            $response = $userDb->execute(new \MongoCode('return ' . $code . '.toArray()'));
+            $response = $response['retval'];
+        }
+        //todo isset errmsg and ok:0 - what to do?
+    } else {
+        //handle error
+    }
+    return $response;
 }
 
 ob_end_flush();
