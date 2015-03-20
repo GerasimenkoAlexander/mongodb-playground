@@ -19,7 +19,7 @@
                 <h1>
                     <!--<span class="glyphicon glyphicon-heart"></span>-->
                     MongoDB Playground
-                    <img id="preloader" src="/img/Preloader32.gif">
+                    <img id="preloader" src="/img/loading-bars.svg">
                 </h1>
             </div>
             <div class="col-sm-3">
